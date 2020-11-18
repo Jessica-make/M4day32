@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.spoto.dao.BookClassMapper">
+
+    <!--登录    -->
+    <select id="newLogin" resultMap="AccountResultMap1">
+        SELECT * FROM  account0 WHERE username= #{username} AND passwd_str=#{passwd}
+    </select>
+
+    <!--   查询图书分类-->
+    <select id="getList" resultType="org.spoto.model.BookClass">
+      SELECT * FROM bookclassification t1
+  </select>
+
+    <!--   查询图书分类-->
+    <select id="getBookclass" resultType="org.spoto.model.BookClass">
+      SELECT * FROM bookclassification t1
+  </select>
+
+
+    <resultMap id="AccountResultMap1" type="org.spoto.model.Account0">
+        <result column="passwd_str" property="passwd"></result>
+    </resultMap>
+
+    <!--新增图书分类-->
+    <insert id="addBookclass" parameterType="org.spoto.model.BookClass">
+        INSERT INTO bookclassification(bookclass) VALUES (#{bookclass})
+    </insert>
+    <!--新增图书-->
+    <insert id="addbook"  parameterType="org.spoto.model.Bookname">
+     INSERT INTO bookname(bookclass_id, bookname, image, author, introduce,date0) VALUES (#{bookclass_id},#{bookname},#{image},#{author},#{introduce},#{date})
+    </insert>
+
+
+      <delete id="delBooks" parameterType="java.lang.Integer">
+          DELETE FROM bookname WHERE id IN(
+            <foreach collection="ids" item="id" separator=",">
+                #{id}
+            </foreach>
+          )
+      </delete>
+
+    <select id="list" resultType="org.spoto.model.Bookname">
+        SELECT * FROM bookname t1
+    </select>
+
+    <select id="OneBookList" resultType="org.spoto.model.Bookname">
+        SELECT * FROM bookname t1 WHERE id=#{id}
+    </select>
+
+    <!--t2的id设置别名 boid-->
+    <select id="getBooknamebok" resultMap="getBooknamebokList">
+        SELECT t1.*,t2.id boid,t2.bookname,t2.image,t2.author,t2.introduce,t2.date0 FROM bookclassification t1 INNER JOIN bookname t2 ON t1.id=t2.bookclass_id
+        <include refid="whereSqlDto"></include> GROUP BY t2.id DESC
+    </select>
+
+    <!--因为Bookname模块里面被封装了，数据库的boid找不到Bookname模块的id,,,,,,倒数第二行的id代表图书分类的id在图书表-->
+    <!--倒数第一行的id代表原本的bookclassification的id-->
+    <resultMap id="getBooknamebokList" type="org.spoto.dto.BooknameDto">
+        <result column="boid" property="bok.id"></result>
+        <result column="bookname" property="bok.bookname"></result>
+        <result column="image" property="bok.image"></result>
+        <result column="author" property="bok.author"></result>
+        <result column="introduce" property="bok.introduce"></result>
+        <result column="date0" property="bok.date"></result>
+        <result column="id" property="bok.bookclass_id"></result>
+        <result column="id" property="id"></result>
+    </resultMap>
+
+    <!--联表统计分页,说实话，就是想知道里面有没有数据-->
+    <select id="listCountDto" resultType="java.lang.Integer">
+        SELECT count(*) FROM bookname t1
+    </select>
+
+    <!--工具类-->
+    <sql id="whereSqlDto">
+        <where>
+            <if test="bookclass1 !=null and bookclass1 !=''">
+                AND t1.bookclass LIKE  CONCAT ('%',#{bookclass1},'%')
+            </if>
+            <if test="bookname !=null and bookname !=''">
+                AND t2.bookname LIKE CONCAT ('%',#{bookname},'%')
+            </if>
+        </where>
+    </sql>
+
+
+
+
+</mapper>

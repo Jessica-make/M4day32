@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-cN">
+<head>
+    <meta charset="UTF-8">
+    <title>笔记页</title>
+    <link href="plugins\bootstrap\css\bootstrap.min.css" rel="stylesheet">
+    <style>
+
+        .table{
+            text-align: center;
+            margin-top: 7px;
+            margin-bottom: 5px;
+        }
+
+        .mynav .pagination{
+            margin:10px 10px 0 0 ;
+        }
+
+         .search-select{
+             color: blue;
+         }
+        .mypanel{
+            margin-bottom: 2px;
+        }
+        .PanelBody{
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="my-body">
+    <!--新增图书分类模态框  -->
+    <div class="modal fade" id="editMo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true" @click="closeMo()">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel0">图书分类</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group ">
+                        <label for="bookclass">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>新增图书分类
+                        </label>
+                        <input type="text" class="form-control" id="bookclass" placeholder="新增图书分类" v-model="ed.bookclass">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default success" @click="savebookclass()">保存</button>
+                        <button type="button" class="btn btn-default info" @click="closeMo()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--新增图书信息模态框  -->
+    <div class="modal fade" id="editMo1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true" @click="closeMo1()">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">新增图书信息</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group ">
+                        <label for="bookclass1">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> 请输入图书分类
+                        </label>
+                        <input type="text" class="form-control" id="bookclass1" placeholder="请输入图书分类">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookname">
+                            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> 请输入图书名字
+                        </label>
+                        <input type="text" class="form-control" id="bookname" placeholder="请输入图书名字">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookimage">
+                            <span class="glyphicon glyphicon-education" aria-hidden="true"></span> 请添加图书图片
+                        </label>
+                        <input type="file" class="form-control" id="bookimage" placeholder="请添加图书图片">
+                    </div>
+                    <div class="form-group">
+                        <label for="author">
+                            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> 请输入图书作者
+                        </label>
+                        <input type="text" class="form-control" id="author" placeholder="请输入图书作者">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="introduce">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 请输入图书介绍
+                        </label>
+                        <input type="text" class="form-control" id="introduce" placeholder="请输入图书介绍">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default success" onclick="savebook()">保存</button>
+                        <button type="button" class="btn btn-default info" @click="closeMo1()" >取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!--Notes.html主界面-->
+    <div class="panel panel-default mypanel">
+        <div class="panel-heading">用户列表数据</div>
+        <div class="panel-body PanelBody">
+
+            <form class="form-inline">
+                <button type="button" class="btn btn-success " >
+                    {{allSel ? '取消':  '全选' }}
+                </button>
+                <button type="button" class="btn btn-success" @click="openMo()">新增分类</button>
+                <button type="button" class="btn btn-success" @click="openMo1()">新增图书</button>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">用户名</div>
+                        <input type="text" class="form-control"  placeholder="请输入用户名" >
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">密码</div>
+                        <input type="text" class="form-control" placeholder="请输入密码" >
+                    </div>
+                </div>
+
+<!--                <button type="button" class="btn btn-primary"  @click="xPage.getList(1)">搜索</button>-->
+<!--                <button type="button" class="btn btn-primary" @click="delMore()" >删除</button>-->
+            </form>
+
+
+        <table class="table able-bordered table-hover table-condensed tableVue" >
+            <tr class="info">
+<!--                <td>选择</td>-->
+                <td>ID</td>
+                <td>笔记名</td>
+            </tr>
+
+            <tr  v-for="da in dList">
+<!--                <td>-->
+<!--                    <input type="checkbox" :id="da.id" :value="da.id" v-model="ids">-->
+<!--                </td>-->
+                <td>{{da.id}}</td>
+                <td v-html="da.title"></td>
+            </tr>
+        </table>
+        </div>
+    </div>
+
+    <div>
+        <ul class="pagination"  >
+            <li :class="{disabled :(xPage.PageIndex===1)}">
+                <a href="#" aria-label="Previous" @click="xPage.upPage()">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li v-for="pi in xPage.PageList">
+                <a @click="xPage.getList(pi)">{{pi}}</a>
+            </li>
+            <li :class="{disabled :(xPage.PageIndex===xPage.PageMax)}" >
+                <a href="#" aria-label="Next" @click="xPage.downPage()">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script src="plugins/jq/jquery.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="plugins/layer/layer.js"></script>
+<script src="plugins/vue/vue.js"></script>
+<script src="js/x-page.js"></script>
+
+<script>
+var app=new Vue({
+    el: '.my-body',
+    data:{
+       xPage:xPage,
+       dList:[],
+       //全选;
+       allSel:false,
+       //新增图书分类
+        ed:{
+           bookclass:''
+        },
+        //新增图书信息分类;
+        eds:{
+            bookclass1:'',
+            bookname:'',
+            bookimage:'',
+            author:'',
+            introduce:''
+        }
+
+
+
+    },
+    methods: {
+        //打开;
+        openMo: function () {
+            $('#editMo').modal({
+                backdrop:'static',
+                keyboard:false
+            });
+        },
+        openMo1:function(){
+            $('#editMo1').modal({
+                backdrop:'static',
+                keyboard:false
+            });
+        },
+
+        //关闭1;
+        closeMo: function () {
+            //关闭前设为空值,把数据不要显示在新增页面;
+            this.ed.bookclass='';
+            $('#editMo').modal('hide');
+        },
+        //关闭2;
+        closeMo1:function(){
+            //关闭前设为空值,把数据不要显示在新增页面;
+            this.eds.bookclass1='';
+            this.eds.bookname='';
+            this.eds.bookimage='';
+            this.eds.author='';
+            this.eds.introduce=''
+            $('#editMo1').modal('hide');
+        },
+
+
+
+      savebookclass:function(){
+            $.ajax({
+                url: '/savebookclass.ajax',
+                type: 'POST',
+                data:{
+                    bookclass:app.ed.bookclass
+                },
+                dataType: 'JSON',
+                success: function (resp) {
+                    if (resp.code===0) {
+                        layer.alert('图书分类保存成功!');
+                        app.closeMo();
+                    } else {
+                        layer.alert('已有该图书类，请勿重复添加!');
+                        app.closeMo();
+                    }
+                },
+                error: function () {
+                    layer.alert('err');
+                }
+            });
+
+        },
+      getData:function () {
+          $.ajax({
+              url: '/es',
+              type: 'POST',
+              dataType: 'JSON',
+              success: function (resp) {
+                  if (resp) {
+                      //index表示可以多次弹窗;
+                      // layer.close(index);
+                      // app.xPage.getList(app.xPage.PageIndex);
+                      // app.ids = [];
+
+                      app.dList=resp.dataList;
+
+                  } else {
+                      layer.alert('查询商品失败!');
+                  }
+              },
+              error: function () {
+                  layer.alert('err');
+              }
+          });
+      }
+
+    }
+});
+//初始化数据;
+   app.getData();
+
+    function savebook(){
+        //获取文件以及说明;
+        var bookclass1=$("#bookclass1").val();
+        var bookname=$("#bookname").val();
+        var bookimage=$("#bookimage")[0].files[0];
+        var author=$("#author").val();
+        var introduce=$("#introduce").val();
+
+        //创建forData对象
+        var formData = new FormData();
+
+        //往对象里面传值;
+        formData.append("bookclass1",bookclass1);
+        formData.append("bookname", bookname);
+        formData.append("bookimage",bookimage);
+        formData.append("author", author);
+        formData.append("introduce",introduce);
+        $.ajax({
+            url: '/savebook.ajax',
+            type: 'POST',
+            data:formData,
+            dataType: 'JSON',
+            //上传配置;
+            contentType:false,
+            processData: false,
+            success: function (resp) {
+                if (resp.type) {
+                    layer.alert('图书保存成功!');
+                    app.closeMo1();
+
+                } else {
+                    layer.alert('已有该图书，或者提交信息不完整!');
+                    app.closeMo1();
+                }
+            },
+            error: function () {
+                layer.alert('err');
+            }
+        });
+     }
+
+
+
+</script>
+</body>
+</html>

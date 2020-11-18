@@ -1,0 +1,10 @@
+.login {
+    width: 320px;
+    margin: 100px auto 0 auto;
+}
+.login .panel-heading {
+    text-align: center;
+}
+.login label {
+    color: black;
+}

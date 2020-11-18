@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-cN">
+<head>
+    <meta charset="UTF-8">
+    <title>添加员工</title>
+    <link href="plugins\bootstrap\css\bootstrap.min.css" rel="stylesheet">
+    <style>
+        .mypanel{
+            margin-bottom: 2px;
+        }
+        .table{
+            text-align: center;
+            margin-top: 7px;
+            margin-bottom: 5px;
+        }
+
+        .mynav .pagination{
+            margin:10px 10px 0 0 ;
+        }
+
+        /*.mynav{*/
+        /*    padding-right: 0;*/
+        /*}*/
+
+
+        .PanelBody{
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+        #myModalLabel{
+            text-align: center;
+        }
+        .modal-header{
+            background-color:#00ffff;
+        }
+
+        .dumppage{
+            margin-top: 10px;
+        }
+        .inputinner{
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="my-body">
+
+    <!--加个模态框  -->
+<div class="modal fade" id="editMo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true" @click="closeMo()">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">修改人员信息</h4>
+                </div>
+                <div class="modal-body">
+
+
+                    <div class="form-group ">
+                        <label for="username">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> 请输入您的用户名
+                        </label>
+                        <input type="text" class="form-control" id="username" placeholder="请输入您的用户名" v-model="ed.username">
+                    </div>
+                    <div class="form-group">
+                        <label for="passwd">
+                            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> 请输入您的密码
+                        </label>
+                        <input type="text" class="form-control" id="passwd" placeholder="请输入您的密码"
+                               v-model="ed.passwd">
+                    </div>
+                    <div class="form-group">
+                        <label for="role">
+                            <span class="glyphicon glyphicon-education" aria-hidden="true"></span> 请输入您的职位
+                        </label>
+                        <input type="text" class="form-control" id="role" placeholder="请输入您的职位" v-model="ed.role">
+                    </div>
+                    <div class="form-group">
+                        <label for="status">
+                            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> 锁定/可用
+                        </label>
+                        <input type="text" class="form-control" id="status" placeholder="请输入状态" v-model="ed.status">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date0">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 请输入入职时间
+                        </label>
+                        <input type="date" class="form-control" id="date0" placeholder="请输入入职时间" v-model="ed.date0">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default success" @click="save()">保存</button>
+                        <button type="button" class="btn btn-default info" @click="closeMo()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="panel panel-default mypanel">
+    <div class="panel-heading">用户列表数据</div>
+    <div class="panel-body PanelBody">
+        <form class="form-inline">
+            <button type="button" class="btn btn-success " @click="SelectAll()">
+                {{allSel ? '取消':  '全选' }}
+            </button>
+            <button type="button" class="btn btn-success " @click="getfirstPage()">刷新</button>
+            <button type="button" class="btn btn-success " @click="openMo()">新增</button>
+
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">用户名</div>
+                    <input type="text" class="form-control"  placeholder="请输入用户名" v-model="xPage.sd.username">
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">密码</div>
+                    <input type="text" class="form-control" placeholder="请输入密码" v-model="xPage.sd.passwd">
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary"  @click="xPage.getList(1)">搜索</button>
+            <button type="button" class="btn btn-primary" @click="delMore()" >删除</button>
+        </form>
+    </div>
+
+        <table class="table able-bordered table-hover table-condensed tableVue" >
+            <tr class="info">
+                <td>选择</td>
+                <td>序号</td>
+                <td>用户名</td>
+                <td>密码</td>
+                <td>职位</td>
+                <td>状态</td>
+                <td>入职时间</td>
+                <td>操作</td>
+            </tr>
+
+            <tr class="success" v-for="da in xPage.dataList">
+                <td>
+                    <input type="checkbox" :id="da.id" :value="da.id" v-model="ids">
+                </td>
+                <td>{{da.id}}</td>
+                <td>{{da.username}}</td>
+                <td>{{da.passwd}}</td>
+                <td>{{da.role}}</td>
+                <td>{{da.status}}</td>
+                <td>{{da.date0 | dateString('YYYY-MM-DD')}}</td>
+                <td>
+                    <input  type="button" value="删除" @click="del(da.id)">
+                    <button type="button" class="btn btn-danger"  @click="LockEmp(da.id)">
+                        {{da.status==='可用' ? '锁定':'可用'}}
+                    </button>
+
+                    <input type="button" value="修改"  @click="edit(da)">
+                </td>
+            </tr>
+        </table>
+</div>
+<nav aria-label="Page navigation" class="mypagination mynav"  style="display: flex ;flex-direction: row"  >
+    <div>
+        <ul class="pagination"  >
+            <li :class="{disabled :(xPage.PageIndex===1)}">
+                <a href="#" aria-label="Previous" @click="xPage.upPage()">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li v-for="pi in xPage.PageList">
+                <a @click="xPage.getList(pi)">{{pi}}</a>
+            </li>
+            <li :class="{disabled :(xPage.PageIndex===xPage.PageMax)}" >
+                <a href="#" aria-label="Next" @click="xPage.downPage()">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="dumppage">
+        <form class="form-inline">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">跳转</div>
+                    <input type="text" style="text-align: center" class="form-control inputinner"  placeholder="第几页" v-model="xPage.PageIndex">
+                    <div class="input-group-addon">页</div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary" @click="xPage.getList(xPage.PageIndex)">Go</button>
+        </form>
+    </div>
+</nav>
+
+</div>
+<script src="plugins/jq/jquery.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="plugins/layer/layer.js"></script>
+<script src="plugins/vue/moment.js"></script>
+<script src="plugins/vue/vue.js"></script>
+<script src="js/x-page.js"></script>
+
+
+
+<script>
+
+// 定义过滤器 ，如果有传值，用format，如果没传值默认用'YYYY-MM-DD HH:mm:ss'
+Vue.filter('dateString', function (value, format = 'YYYY-MM-DD HH:mm:ss') {
+        // 格式化一下，在返回回去;
+  return moment(value).format(format);
+})
+var app=new Vue({
+    el: '.my-body',
+    data:{
+        xPage:xPage,
+        time: new Date(),
+        //编辑数据；
+        ed:{
+            //不管是新增还是修改，都需要一个id字段;
+            id:0,
+            username:'',
+            passwd:'',
+            role:'',
+            status:'',
+            date0:''
+        },
+        //多选删除用;
+        ids:[],
+        //全选;
+        allSel:false,
+    },
+    methods: {
+        //全选和取消全选;
+        SelectAll: function () {
+            if (this.allSel) {
+                //取消
+                this.ids = []
+            } else {
+                //全选
+                for (var i = 0; i < this.xPage.dataList.length; i++) {
+                    this.ids.push(this.xPage.dataList[i].id);
+                }
+            }
+            //当点击全选以后，状态改为true;
+            this.allSel = !this.allSel;
+        },
+
+        //删除;
+        del: function (Delids) {
+            layer.confirm('您确定要删除该数据吗？', {
+                btn: ['确定', '取消'] //按钮
+            }, function (index) {
+                $.ajax({
+                    url: '/Del.ajax',
+                    type: 'POST',
+                    data: {
+                        //删除按钮那里，已经把id传上去了，这里Delids只是一个前端的参数变量;
+                        ids: Delids
+                    },
+                    dataType: 'JSON',
+                    success: function (resp) {
+                        if (resp.type) {
+                            //index表示可以多次弹窗;
+                            layer.close(index);
+                            app.xPage.getList(app.xPage.PageIndex);
+                            app.ids = [];
+                        } else {
+                            layer.alert('删除失败!');
+                        }
+                    },
+                    error: function () {
+                        layer.alert('err');
+                    }
+                });
+            });
+        },
+        //多选删除
+        delMore: function () {
+            if (this.ids.length <= 0) {
+                layer.alert('请选择您要删除的数据');
+                return;
+            }
+            let idStr = this.ids.join(",");
+            this.del(idStr);
+        },
+
+        //打开;
+        openMo: function () {
+            $('#editMo').modal({
+                backdrop:'static',
+                keyboard:false
+            });
+        },
+        //关闭;
+         closeMo: function () {
+            //关闭前设为空值,把数据不要显示在新增页面;
+            this.ed.id=0;
+            this.ed.username='';
+            this.ed.passwd='';
+            this.ed.role='';
+            this.ed.status='';
+            this.ed.date0=''
+            $('#editMo').modal('hide');
+        },
+
+        //修改
+        edit: function (da) {
+            //把数值赋上去;
+            this.ed.id = da.id;
+            this.ed.username = da.username;
+            this.ed.passwd = da.passwd;
+            this.ed.role = da.role;
+            this.ed.status = da.status;
+            this.ed.date0 = da.date0;
+            this.openMo();
+        },
+        //保存
+        save: function () {
+            $.ajax({
+                url: '/Save-Emp.ajax',
+                type: 'POST',
+                data: {
+                    //修改需要id;
+                    id: app.ed.id,
+                    username: app.ed.username,
+                    passwd: app.ed.passwd,
+                    role: app.ed.role,
+                    status: app.ed.status,
+                    date0: app.ed.date0
+                },
+                dataType: 'JSON',
+                success: function (resp) {
+                    if (resp.code===0) {
+                        layer.alert('保存成功!');
+                        app.closeMo();
+                        app.xPage.getList(app.xPage.PageIndex);
+                    } else {
+                        layer.alert('该用户名已被注册，请更换用户名！');
+                    }
+                },
+                error: function () {
+                    layer.alert('err');
+                }
+            })
+        },
+        LockEmp:function(idL){
+                 $.ajax({
+                     url: '/LockEmp.ajax',
+                     type: 'POST',
+                     data: {
+                         //修改需要id;
+                         id: idL,
+                     },
+                     dataType: 'JSON',
+                     success: function (resp) {
+                         if (resp.type) {
+                             layer.alert('修改成功!');
+                             app.xPage.getList(app.xPage.PageIndex);
+                         } else {
+                             layer.alert('修改失败!');
+                         }
+                     },
+                     error: function () {
+                         layer.alert('err');
+                     }
+                 })
+        },
+
+        getfirstPage:function () {
+            app.xPage.getList(1);
+        }
+    }
+});
+//这里必须手动触发，初始化调用;
+ app.xPage.init('/EList.ajax');
+
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# Project exclude paths
+/M4day32_Book_manager/target/
+/M4day32_web_common/target/
+/M4day32_web_manager/target/

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.spoto.dao.EmpMapper">
+
+   <!--登录    -->
+    <select id="newLogin" resultMap="AccountResultMap">
+        SELECT * FROM  account0 WHERE username= #{username} AND passwd_str=#{passwd}
+    </select>
+
+    <!--新增判断是否有该用户-->
+    <select id="selectUser" resultType="java.lang.Integer">
+        SELECT count(*) FROM account0 WHERE username=#{username}
+    </select>
+
+    <!--新增-->
+    <insert id="add"  parameterType="org.spoto.model.Account0">
+     INSERT INTO account0(username, passwd_str, role, status, date0) VALUES (#{username},#{passwd},#{role},#{status},#{date0})
+    </insert>
+
+    <update id="change" >
+    UPDATE account0 SET  username = #{username},
+                 passwd_str =#{passwd}, role = #{role},status = #{status}, date0 = #{date1} WHERE id=#{id}
+    </update>
+
+    <delete id="delemp"  parameterType="java.lang.Integer">
+    DELETE FROM account0 WHERE id IN (
+--         collection相当于一个List,循环ids,然后设置变量为id
+             <foreach collection="ids" item="id" separator=",">
+                 #{id}
+             </foreach>
+    )
+    </delete>
+
+     <!--查询一定要写 resultType,不过下面写了Type就可以不写-->
+    <select id="getList"  resultMap="empResultMap">
+          SELECT * FROM account0 t1 <include refid="whereSql"></include>
+    </select>
+
+       <!-- //查询用户名和密码;-->
+      <select id="listCount" resultType="java.lang.Integer">
+           SELECT count(*) FROM account0 t1 <include refid="whereSql"></include>
+      </select>
+
+    <!--工具类-->
+    <sql id="whereSql">
+        <where>
+            <if test="username !=null and username !=''">
+                AND t1.username LIKE  CONCAT ('%',#{username},'%')
+            </if>
+            <if test="passwd !=null and passwd !=''">
+                AND t1.passwd_str LIKE CONCAT ('%',#{passwd},'%')
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="empResultMap" type="org.spoto.model.Account0">
+         <result column="passwd_str" property="passwd"></result>
+    </resultMap>
+
+    <resultMap id="AccountResultMap" type="org.spoto.model.Account0">
+        <result column="passwd_str" property="passwd"></result>
+    </resultMap>
+
+    <resultMap id="SELECTResultMap" type="org.spoto.model.Account0">
+        <result column="passwd_str" property="passwd"></result>
+    </resultMap>
+
+    <select id="SELECTEmp" resultMap="SELECTResultMap">
+       SELECT * FROM  account0 WHERE id=#{id}
+    </select>
+
+    <!--update没有结果类型-->
+    <update id="upDateEmp1" >
+        UPDATE account0 SET status=#{status} WHERE id=#{id}
+    </update>
+
+</mapper>

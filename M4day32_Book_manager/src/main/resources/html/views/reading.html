@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>阅读量统计</title>
+    <link href="plugins\bootstrap\css\bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<button type="button" class="btn btn-info" onclick="TestJQ()">点击我</button>
+
+<button type="button" class="btn btn-danger" id="button3">请调用JQ</button>
+
+<div id="main">
+    <button type="button" class="btn btn-danger" id="button2">JS调用Vue</button>
+    <button type="button" class="btn btn-danger" onclick="button1()">JQ调用Vue</button>
+</div>
+<br/>
+<br/>
+<button type="button" class="btn btn-success" onclick="JQchooseJq()">JQ调用JQ</button>
+
+<script src="plugins/jq/jquery.min.js"></script>
+<script src="plugins/vue/vue.js"></script>
+
+<script>
+    //JQ调用JQ方法
+     function JQchooseJq() {
+         getFuc();
+    }
+
+
+    //JQ调用JS方法
+    function TestJQ(){
+        //调用方式
+        $().getFuc();
+    }
+    //获取文本框值
+    $(function(){
+        //名字为getFuc的jQuery方法
+        $.fn.getFuc=function(){
+            alert("1111111111111");
+        }
+    });
+
+
+    //Js调用JQ方法
+    $("#button3").click(function () {
+        getFuc();
+    });
+
+    function getFuc() {
+        alert("hhhhh");
+    }
+
+
+
+   var app = new Vue({
+            el: '#main',
+            data: {},
+            methods: {
+                fn: function () {
+                    alert('hhhh')
+                }
+            }
+        })
+        //Js调用JQ方法
+        // $("#button2").click(function () {
+        //     getFuc();
+        // });
+
+         $('#button2').click(function() {
+          app.fn();
+         });
+          //JQ调用Vue
+          function button1() {
+              app.fn();
+          }
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

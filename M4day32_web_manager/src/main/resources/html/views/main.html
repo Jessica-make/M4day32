@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>电子书管理系统</title>
+    <link href="plugins\bootstrap\css\bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 布局 */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .main {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .main > div:nth-child(1) {
+            width: 100%;
+            min-height: 52px;
+            max-height: 52px;
+        }
+        .main > div:nth-child(2) {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+        }
+        .main > div:nth-child(2) >div:first-child {
+            height: 100%;
+            min-width: 200px;
+            max-width: 200px;
+            padding-top: 5px;
+            padding-right: 5px;
+        }
+        .main > div:nth-child(2) >div:last-child {
+            height: 100%;
+            width: 100%;
+            padding-top: 5px;
+        }
+        .main > div:nth-child(3) {
+            width: 100%;
+            min-height: 30px;
+            max-height: 30px;
+            text-align: center;
+            line-height: 30px;
+            border-top: 1px #e7e7e7 solid;
+        }
+
+        /* 导航 */
+        .my-nav {
+            margin-bottom: 0;
+        }
+
+        .add-empolyee{
+            text-align: center;
+            background-color:#00ffff ;
+        }
+
+        .add-finace{
+            text-align: center;
+            background-color:lightpink;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- 加个模态框 -->
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">请修改</h4>
+            </div>
+            <div class="modal-body">
+                <input type="text" width="100px">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="main">
+    <div class="main-body">
+        <nav class="navbar navbar-default my-nav">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                            aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">电子书管理系统</a>
+                </div>
+                <!--头部导航栏-->
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown" >
+                            <a  class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                欢迎您 {{username}} <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a data-toggle="modal" data-target="#myModal">修改资料</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a onclick="OutLogin()">退出登录</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+    </div>
+
+
+
+    <div>
+        <div>
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true"
+                               aria-controls="collapseOne">
+                                员工管理
+                            </a>
+                        </h4>
+                    </div>
+
+                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            <a url="Emp.html" class="btn btn-link btn-block mybtn" role="button">主界面</a>
+                            <a url="https://www.baidu.com/" class="btn btn-link btn-block mybtn" role="button" data-toggle="modal" data-target="#myemp">去百度</a>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingTwo">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"
+                               aria-expanded="false" aria-controls="collapseTwo">
+                                网站链接
+                            </a>
+                        </h4>
+                    </div>
+
+                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                        <div class="panel-body">
+                            <a url="https://www.taobao.com/" class="btn btn-link btn-block mybtn" role="button">淘宝</a>
+                            <a url="https://www.tmall.com/" class="btn btn-link btn-block mybtn" role="button" data-toggle="modal" data-target="#myid1">天猫</a>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingThree">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"
+                               aria-expanded="false" aria-controls="collapseThree">
+                                资产信息
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                        <div class="panel-body">
+                            资产表
+                        </div>
+                    </div>
+
+                    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                        <div class="panel-body">
+                            资产分类
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <iframe id="myif" src="Emp.html" border="0" frameborder="0" width="100%" height="100%"></iframe>
+        </div>
+    </div>
+    <div>
+        CopyRight© 2020版权所有 闽ICP备xxxxx号
+    </div>
+</div>
+<script src="plugins/jq/jquery.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="plugins/vue/vue.js"></script>
+<!--<script src="js/Emp.js"></script>-->
+
+
+
+<script type="text/javascript">
+    $(".mybtn").bind("click", function(){
+        //this拿到刚刚点击的那个事件,拿到url属性;
+        var url = $(this).attr("url");
+        //改变src的属性，变成url;
+        $("#myif").attr("src", url);
+    });
+
+    function OutLogin() {
+        $.ajax({
+            url :"/out-login.ajax",
+            type:"POST",
+            dataType :"JSON",
+            success :function (data) {
+                if (data.type){
+                    alert("退出成功!");
+                    window.location.href="login.html";
+                }else {
+                    alert("系统错误，请联系管理员!");
+                }
+            },
+            error :function () {
+                alert("系统错误，请联系管理员!");
+            }
+        })
+    }
+
+    var app=new Vue({
+        el:'.main-body',
+        data:{
+            username:''
+        },
+        methods:{
+            getMainList:function (username) {
+                $.ajax({
+                    url:'/MainList.ajax',
+                    type: 'POST',
+                    data:{
+                        username:username
+                    },
+                    dataType: 'JSON',
+                    success:function (resp) {
+
+                     app.username = resp.username;
+
+                    },
+                    error:function () {
+                      alert('系统错误，请联系管理员!');
+                    }
+                })
+            }
+        }
+    });
+    //初始化调用，可以发起ajax请求;
+    app.getMainList();
+
+
+
+</script>
+</body>
+</html>

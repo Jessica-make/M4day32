@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-cN">
+<head>
+    <meta charset="UTF-8">
+    <title>笔记页</title>
+    <link href="plugins\bootstrap\css\bootstrap.min.css" rel="stylesheet">
+    <style>
+
+        .table{
+            text-align: center;
+            margin-top: 7px;
+            margin-bottom: 5px;
+
+        }
+
+        .mynav .pagination{
+            margin:10px 10px 0 0 ;
+        }
+
+         .search-select{
+             color: blue;
+         }
+        .mypanel{
+            margin-bottom: 2px;
+        }
+        .PanelBody{
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+         .bookwidth{
+             width: 100px;
+
+         }
+
+
+
+    </style>
+</head>
+
+<body>
+<div class="my-body">
+    <!--新增图书分类模态框  -->
+    <div class="modal fade" id="editMo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true" @click="closeMo()">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel0">图书分类</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group ">
+                        <label for="bookclass">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>新增图书分类
+                        </label>
+                        <input type="text" class="form-control" id="bookclass" placeholder="新增图书分类" v-model="ed.bookclass">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default success" @click="savebookclass()">保存</button>
+                        <button type="button" class="btn btn-default info" @click="closeMo()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--新增图书信息模态框  -->
+    <div class="modal fade" id="editMo1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true" @click="closeMo1()">&times;</span>
+                </button>
+                <div class="modal-header" style="text-align: center;background-color: #D2B4DE ">
+                    <h4 class="modal-title" id="myModalLabel">新增图书信息</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" >
+                        <label>
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> 请输入图书分类
+                        </label>
+                            <select  class="form-control" style="width: 570px;font:inherit " v-model="eds.bookclass1" >
+                                <option value="">请选择图书分类</option>
+                                <option v-for="data in bookclassList"  id="bookclass1" :value="data.id" >{{data.bookclass}}</option>
+                            </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bookname">
+                            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> 请输入图书名字
+                        </label>
+                        <input type="text" class="form-control" id="bookname" placeholder="请输入图书名字" v-model="eds.bookname">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookimage">
+                            <span class="glyphicon glyphicon-education" aria-hidden="true"></span> 请添加图书图片
+                        </label>
+                        <input type="file" class="form-control" id="bookimage" placeholder="请添加图书图片" v-on="eds.bookimage">
+                    </div>
+                    <div class="form-group">
+                        <label for="author">
+                            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> 请输入图书作者
+                        </label>
+                        <input type="text" class="form-control" id="author" placeholder="请输入图书作者" v-model="eds.author">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="date0">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> 请输入上架时间
+                        </label>
+                        <input type="date" class="form-control" id="date0" placeholder="请输入上架时间" v-model="eds.date0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="introduce">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 请输入图书介绍
+                        </label>
+                        <input type="text" class="form-control" id="introduce" placeholder="请输入图书介绍" v-model="eds.introduce">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default success" onclick="savebook()">保存</button>
+                        <button type="button" class="btn btn-default info" @click="closeMo1()" >取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Book.html主界面-->
+    <div class="panel panel-default mypanel">
+        <div class="panel-heading">用户列表数据</div>
+        <div class="panel-body PanelBody">
+
+            <form class="form-inline">
+                <button type="button" class="btn btn-success" @click="selectAll()">
+                    {{allSel ? '取消':  '全选' }}
+                </button>
+                <button type="button" class="btn btn-success" @click="openMo()">新增分类</button>
+                <button type="button" class="btn btn-success" @click="openMo1()">图书上架</button>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">图书分类</div>
+                        <input type="text" class="form-control"  placeholder="请输入图书分类" v-model="xPage.sds.bookclass1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">图书名</div>
+                        <input type="text" class="form-control" placeholder="请输入图书名" v-model="xPage.sds.bookname">
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary"  @click="xPage.getdataList(1)">搜索</button>
+                <button type="button" class="btn btn-danger" @click="delMore()" >删除</button>
+                <button type="button" class="btn btn-info" @click="editData(xPage.dataList)">修改</button>
+            </form>
+
+
+        <table class="table able-bordered table-hover table-condensed tableVue" >
+            <tr class="info" style="vertical-align: middle">
+                <td style="width: 50px" class="chooseWidth">选择</td>
+                <td>序号</td>
+                <td>图书分类</td>
+                <td>图书名</td>
+                <td>图片</td>
+                <td>作者</td>
+                <td>上架时间</td>
+                <td>简介</td>
+            </tr>
+
+            <tr class="info" v-for="da in xPage.dataList" >
+                <td style=" vertical-align: middle;">
+                    <input type="checkbox" :id="da.bok.id" :value="da.bok.id" v-model="ids">
+                </td>
+                <td class="bookwidth" style=" vertical-align: middle;">{{da.bok.id}}</td>
+                <td class="bookwidth" style=" vertical-align: middle;">{{da.bookclass}}</td>
+                <td class="bookwidth" style=" vertical-align: middle;">{{da.bok.bookname}}</td>
+                <td class="bookwidth" style=" vertical-align: middle;"><img v-bind:src="da.bok.image" style="width: 80px;height: 100px;display: block"></td>
+                <td class="bookwidth" style=" vertical-align: middle;">{{da.bok.author}}</td>
+                <td class="bookwidth" style=" vertical-align: middle;">{{da.bok.date | dateString('YYYY-MM-DD')}}</td>
+                <td style=" vertical-align: middle; text-align: left"> {{da.bok.introduce}}</td>
+            </tr>
+        </table>
+        </div>
+    </div>
+
+    <nav aria-label="Page navigation" class="mypagination mynav"  style="display: flex ;flex-direction: row;margin-left: 560px"  >
+        <div>
+            <ul class="pagination"  >
+                <li :class="{disabled :(xPage.PageIndex===1)}">
+                    <a href="#" aria-label="Previous" @click="xPage.upPage()">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li v-for="pi in xPage.PageList">
+                    <a @click="xPage.getdataList(pi)">{{pi}}</a>
+                </li>
+                <li :class="{disabled :(xPage.PageIndex===xPage.PageMax)}" >
+                    <a href="#" aria-label="Next" @click="xPage.downPage()">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="dumppage">
+            <form class="form-inline" style="margin-top: 10px">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">跳转</div>
+                        <input type="text" style="text-align: center;width: 50px" class="form-control inputinner"  placeholder="第几页" v-model="xPage.PageIndex">
+                        <div class="input-group-addon">页</div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-info" @click="xPage.getdataList(xPage.PageIndex)">Go</button>
+            </form>
+        </div>
+    </nav>
+
+
+</div>
+
+<script src="plugins/jq/jquery.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="plugins/layer/layer.js"></script>
+<script src="plugins/vue/moment.js"></script>
+<script src="plugins/vue/vue.js"></script>
+<script src="js/x-page.js"></script>
+
+<script>
+    // 定义过滤器 ，如果有传值，用format，如果没传值默认用'YYYY-MM-DD HH:mm:ss'
+    Vue.filter('dateString', function (value, format = 'YYYY-MM-DD HH:mm:ss') {
+        // 格式化一下，在返回回去;
+        return moment(value).format(format);
+    })
+var app=new Vue({
+    el: '.my-body',
+    data:{
+       xPage:xPage,
+       time: new Date(),
+       dList:[],
+       numberList:[1,2,3,4,5],
+
+       //全选;
+       allSel:false,
+       //新增图书分类
+       ed:{
+           bookclass:''
+       },
+        //新增图书信息分类,修改要用到id;
+       eds:{
+            id:0,
+            bookclass1:'',
+            bookname:'',
+            bookimage:'',
+            author:'',
+            introduce:'',
+            date0:''
+        },
+        //搜索图书数据;
+       sd:{
+            bookclass1:'',
+            bookname:'',
+            bookimage:'',
+            author:'',
+            introduce:''
+        },
+      //多选删除用;
+       ids:[],
+      //展示多个图书分类
+      bookclassList:[]
+
+    },
+    methods: {
+        //打开;
+        openMo: function () {
+            $('#editMo').modal({
+                backdrop:'static',
+                keyboard:false
+            });
+        },
+        openMo1:function(){
+            $('#editMo1').modal({
+                backdrop:'static',
+                keyboard:false
+            });
+        },
+
+        //关闭1;
+        closeMo: function () {
+            //关闭前设为空值,把数据不要显示在新增页面;
+            this.ed.bookclass = '';
+            $('#editMo').modal('hide');
+        },
+        closeMo1: function () {
+            this.eds.bookclass1 = '';
+            this.eds.bookname = '';
+            this.eds.bookimage = '';
+            this.eds.author = '';
+            this.eds.introduce = ''
+            this.eds.date0 = ''
+            $('#editMo1').modal('hide');
+        },
+        //修改,das代表多本书的数据
+        editData: function (das) {
+            // console.log(das);
+            if (this.ids.length<= 0) {
+                layer.alert('请选择您要修改的数据');
+                return;
+            }
+
+            //把数值赋上去;
+            this.eds.id = das.id;
+            this.eds.bookname = das.bookname;
+            this.eds.bookimage = das.image;
+            this.eds.author = das.author;
+            this.eds.introduce = das.introduce;
+            this.openMo1();
+        },
+
+        getBookclass:function(){
+            $.ajax({
+                url: '/QueryClass.ajax',
+                type: 'POST',
+                dataType: 'JSON',
+                success: function (resp) {
+                   app.bookclassList=resp.list;
+                },
+                error: function () {
+                    layer.alert('err');
+                }
+            });
+        },
+
+
+
+        //保存图书分类
+        savebookclass: function () {
+            $.ajax({
+                url: '/savebookclass.ajax',
+                type: 'POST',
+                data: {
+                    bookclass: app.ed.bookclass
+                },
+                dataType: 'JSON',
+                success: function (resp) {
+                    if (resp.code === 0) {
+                        layer.alert('图书分类保存成功!');
+                        app.closeMo();
+                    } else {
+                        layer.alert('已有该图书类，请勿重复添加!');
+                        app.closeMo();
+                    }
+                },
+                error: function () {
+                    layer.alert('err');
+                }
+            });
+
+        },
+        //全选
+        selectAll: function () {
+            //this.allSel代表取消，点击了之后，如果显示的取消按钮，把ids全部赋为空
+            if (this.allSel){
+                //取消
+                this.ids=[];
+            }else {
+                //全选,push,在数组末尾添加一个或者多个元素，并返回新的长度
+                //this.xPage.dataList[i]=一条数据的某一个元素 加上.id表示一个数据的id
+                //push方法，把所以的id用,分开，放到ids数组里面
+                for (var i = 0;i<this.xPage.dataList.length;i++){
+                    this.ids.push(this.xPage.dataList[i].bok.id);
+                }
+
+            }
+            //点击全选以后，状态改变
+            this.allSel=!this.allSel;
+        },
+        //多选删除
+        delMore:function () {
+            if (this.ids.length <= 0) {
+                layer.alert('请选择您要删除的数据');
+                return;
+            }
+            let idStr = this.ids.join(",");
+            layer.confirm('您确定要删除该数据吗？', {
+                btn: ['确定', '取消'] //按钮
+            }, function (index) {
+                $.ajax({
+                    url: '/DelBook.ajax',
+                    type: 'POST',
+                    data: {
+                        ids: idStr
+                    },
+                    dataType: 'JSON',
+                    success: function (resp) {
+                        if (resp.type) {
+                            //index表示可以多次弹窗;
+                            layer.close(index);
+                            app.xPage.getdataList(app.xPage.PageIndex);
+                            app.ids = [];
+                        } else {
+                            layer.alert('删除失败!');
+                        }
+                    },
+                    error: function () {
+                        layer.alert('err');
+                    }
+                });
+            });
+        },
+
+    }
+});
+//这里必须手动触发，初始化调用;
+app.xPage.init('/BooknameDto.ajax');
+app.getBookclass();
+
+    //保存图书
+    function savebook(){
+        //获取文件以及说明;
+        var bookclass1=$("#bookclass1").val();
+        var bookname=$("#bookname").val();
+        var bookimage=$("#bookimage")[0].files[0];
+        var author=$("#author").val();
+        var introduce=$("#introduce").val();
+        var date0=$("#date0").val();
+
+        //创建forData对象
+        var formData = new FormData();
+
+        //往对象里面传值;
+        formData.append("bookclass1",bookclass1);
+        formData.append("bookname", bookname);
+        formData.append("bookimage",bookimage);
+        formData.append("author", author);
+        formData.append("introduce",introduce);
+        formData.append("date0",date0);
+        $.ajax({
+            url: '/savebook.ajax',
+            type: 'POST',
+            data:formData,
+            dataType: 'JSON',
+            //上传配置;
+            contentType:false,
+            processData: false,
+            success: function (resp) {
+                if (resp.type) {
+                    layer.alert('图书保存成功!');
+                     app.closeMo1();
+                    //可以调用
+                    app.xPage.getdataList(app.xPage.PageIndex);
+                } else {
+                    layer.alert('已有该图书，或者提交信息不完整!');
+                    app.closeMo1();
+                }
+            },
+            error: function () {
+                layer.alert('err');
+            }
+        });
+     }
+
+
+
+</script>
+</body>
+</html>
